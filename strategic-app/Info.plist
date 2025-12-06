@@ -6,5 +6,15 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>VoiceSketch needs microphone access to create beautiful artwork from your voice commands.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>VoiceSketch uses speech recognition to understand your creative prompts and turn them into stunning AI-generated art.</string>
+	<key>CFBundleDisplayName</key>
+	<string>VoiceSketch</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
 </dict>
 </plist>

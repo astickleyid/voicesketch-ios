@@ -1,32 +1,17 @@
 //
-//  strategic_appApp.swift
-//  strategic-app
-//
-//  Created by Austin Stickley on 11/27/25.
+//  VoiceSketchApp.swift
+//  VoiceSketch
 //
 
 import SwiftUI
 import SwiftData
 
 @main
-struct strategic_appApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
-
+struct VoiceSketchApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainTabView()
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(for: Artwork.self)
     }
 }
