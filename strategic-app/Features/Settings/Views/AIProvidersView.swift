@@ -97,6 +97,15 @@ struct AIProvidersView: View {
             hasDalleKey = await APIKeysStore.shared.getKey(for: AIProvider.dalle.keychainKey) != nil
             hasStableKey = await APIKeysStore.shared.getKey(for: AIProvider.stable.keychainKey) != nil
         }
+        .onChange(of: falKey) { _ in savedMessage = nil }
+        .onChange(of: dalleKey) { _ in savedMessage = nil }
+        .onChange(of: stableKey) { _ in savedMessage = nil }
+        .onChange(of: savedMessage) { message in
+            guard message != nil else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                savedMessage = nil
+            }
+        }
         .onDisappear {
             falKey = ""
             dalleKey = ""

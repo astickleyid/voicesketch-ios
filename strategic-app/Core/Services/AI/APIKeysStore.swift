@@ -49,8 +49,11 @@ actor APIKeysStore {
         return str
     }
     
-    func deleteKey(for provider: String) {
+    func deleteKey(for provider: String) async throws {
         let query = keychainQuery(for: provider)
-        SecItemDelete(query as CFDictionary)
+        let status = SecItemDelete(query as CFDictionary)
+        guard status == errSecSuccess || status == errSecItemNotFound else {
+            throw NSError(domain: "APIKeysStore", code: Int(status), userInfo: nil)
+        }
     }
 }
