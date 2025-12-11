@@ -36,7 +36,7 @@ actor APIKeysStore {
         }
     }
     
-    func getKey(for provider: String) -> String? {
+    func getKey(for provider: String) async -> String? {
         var query = keychainQuery(for: provider)
         query[kSecReturnData as String] = kCFBooleanTrue
         query[kSecMatchLimit as String] = kSecMatchLimitOne
