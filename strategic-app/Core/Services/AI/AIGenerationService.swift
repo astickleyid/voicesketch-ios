@@ -52,7 +52,7 @@ actor AIServiceFactory {
         }
     }
     
-    func selectBestProvider() async -> AIProvider {
+    func selectBestProvider() async -> AIProvider? {
         if !await falApiKey().isEmpty {
             return .falAI
         }
@@ -62,7 +62,7 @@ actor AIServiceFactory {
         if let stableKey = await providerKey(for: .stable), !stableKey.isEmpty {
             return .stable
         }
-        return .falAI
+        return nil
     }
     
     private func providerKey(for provider: AIProvider) async -> String? {
@@ -88,7 +88,7 @@ actor UnsupportedAIService: AIGenerationService {
         throw VoiceSketchError.apiError(underlying: NSError(
             domain: provider.rawValue,
             code: -1,
-            userInfo: [NSLocalizedDescriptionKey: "\(provider.displayName) requires an API key. Configure it in Settings > AI Providers."]
+            userInfo: [NSLocalizedDescriptionKey: "\(provider.displayName) requires an API key. Configure it in Settings > AI Configuration > AI Providers."]
         ))
     }
     

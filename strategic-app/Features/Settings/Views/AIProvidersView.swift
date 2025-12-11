@@ -6,6 +6,7 @@
 import SwiftUI
 
 struct AIProvidersView: View {
+    private let messageDismissDelay: UInt64 = 3_000_000_000
     @State private var falKey: String = ""
     @State private var dalleKey: String = ""
     @State private var stableKey: String = ""
@@ -98,14 +99,14 @@ struct AIProvidersView: View {
             hasDalleKey = await APIKeysStore.shared.getKey(for: AIProvider.dalle.keychainKey) != nil
             hasStableKey = await APIKeysStore.shared.getKey(for: AIProvider.stable.keychainKey) != nil
         }
-        .onChange(of: falKey) { _ in savedMessage = nil }
-        .onChange(of: dalleKey) { _ in savedMessage = nil }
-        .onChange(of: stableKey) { _ in savedMessage = nil }
+        .onChange(of: falKey) { _, _ in savedMessage = nil }
+        .onChange(of: dalleKey) { _, _ in savedMessage = nil }
+        .onChange(of: stableKey) { _, _ in savedMessage = nil }
         .onChange(of: savedMessage) { message in
             messageDismissTask?.cancel()
             guard message != nil else { return }
             messageDismissTask = Task {
-                try? await Task.sleep(nanoseconds: 3_000_000_000)
+                try? await Task.sleep(nanoseconds: messageDismissDelay)
                 await MainActor.run {
                     savedMessage = nil
                 }
