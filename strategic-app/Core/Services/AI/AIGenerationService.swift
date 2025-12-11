@@ -91,7 +91,7 @@ actor UnsupportedAIService: AIGenerationService {
         throw VoiceSketchError.apiError(underlying: NSError(
             domain: provider.rawValue,
             code: -1,
-            userInfo: [NSLocalizedDescriptionKey: "\(provider.displayName) is not yet supported"]
+            userInfo: [NSLocalizedDescriptionKey: "\(provider.displayName) requires additional setup. Configure it in Settings > AI Providers."]
         ))
     }
     

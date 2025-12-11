@@ -11,6 +11,9 @@ struct AIProvidersView: View {
     @State private var stableKey: String = ""
     @State private var savedMessage: String?
     @State private var messageColor: Color = .green
+    @State private var hasFalKey = false
+    @State private var hasDalleKey = false
+    @State private var hasStableKey = false
     
     var body: some View {
         Form {
@@ -22,11 +25,18 @@ struct AIProvidersView: View {
                             try await APIKeysStore.shared.save(apiKey: falKey, for: AIProvider.falAI.keychainKey)
                             savedMessage = "Saved fal.ai key"
                             messageColor = .green
+                            hasFalKey = true
+                            falKey = ""
                         } catch {
                             savedMessage = "Failed to save fal.ai key"
                             messageColor = .red
                         }
                     }
+                }
+                if hasFalKey {
+                    Label("Key saved", systemImage: "checkmark.shield")
+                        .font(.caption)
+                        .foregroundColor(.green)
                 }
             }
             
@@ -38,11 +48,18 @@ struct AIProvidersView: View {
                             try await APIKeysStore.shared.save(apiKey: dalleKey, for: AIProvider.dalle.keychainKey)
                             savedMessage = "Saved DALL·E key"
                             messageColor = .green
+                            hasDalleKey = true
+                            dalleKey = ""
                         } catch {
                             savedMessage = "Failed to save DALL·E key"
                             messageColor = .red
                         }
                     }
+                }
+                if hasDalleKey {
+                    Label("Key saved", systemImage: "checkmark.shield")
+                        .font(.caption)
+                        .foregroundColor(.green)
                 }
             }
             
@@ -54,11 +71,18 @@ struct AIProvidersView: View {
                             try await APIKeysStore.shared.save(apiKey: stableKey, for: AIProvider.stable.keychainKey)
                             savedMessage = "Saved Stable Diffusion key"
                             messageColor = .green
+                            hasStableKey = true
+                            stableKey = ""
                         } catch {
                             savedMessage = "Failed to save Stable Diffusion key"
                             messageColor = .red
                         }
                     }
+                }
+                if hasStableKey {
+                    Label("Key saved", systemImage: "checkmark.shield")
+                        .font(.caption)
+                        .foregroundColor(.green)
                 }
             }
             
@@ -69,15 +93,14 @@ struct AIProvidersView: View {
             }
         }
         .task {
-            if let key = await APIKeysStore.shared.getKey(for: AIProvider.falAI.keychainKey) {
-                falKey = key
-            }
-            if let key = await APIKeysStore.shared.getKey(for: AIProvider.dalle.keychainKey) {
-                dalleKey = key
-            }
-            if let key = await APIKeysStore.shared.getKey(for: AIProvider.stable.keychainKey) {
-                stableKey = key
-            }
+            hasFalKey = await APIKeysStore.shared.getKey(for: AIProvider.falAI.keychainKey) != nil
+            hasDalleKey = await APIKeysStore.shared.getKey(for: AIProvider.dalle.keychainKey) != nil
+            hasStableKey = await APIKeysStore.shared.getKey(for: AIProvider.stable.keychainKey) != nil
+        }
+        .onDisappear {
+            falKey = ""
+            dalleKey = ""
+            stableKey = ""
         }
         .navigationTitle("AI Providers")
     }

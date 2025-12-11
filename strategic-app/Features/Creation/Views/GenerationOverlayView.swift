@@ -68,9 +68,9 @@ private struct ShimmerStripe: View {
     }
     
     private func startAnimation() {
-        offsetX = 1.0
+        offsetX = -1.0
         withAnimation(.linear(duration: 1.4).repeatForever(autoreverses: false)) {
-            offsetX = -1.0
+            offsetX = 1.0
         }
     }
 }

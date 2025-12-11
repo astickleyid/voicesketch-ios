@@ -18,7 +18,7 @@ actor APIKeysStore {
         ]
     }
     
-    func save(apiKey: String, for provider: String) throws {
+    func save(apiKey: String, for provider: String) async throws {
         let data = Data(apiKey.utf8)
         var query = keychainQuery(for: provider)
         query[kSecValueData as String] = data
