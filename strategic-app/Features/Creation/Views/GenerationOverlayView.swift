@@ -6,7 +6,7 @@
 import SwiftUI
 
 /// A lightweight glassy overlay with a continuous shimmer stripe.
-/// Place this behind the scribble/canvas content in a ZStack so it doesn't occlude animations.
+/// Place this beneath scribble/canvas content (or adjust zIndex) so it enhances the state without occluding animations.
 struct GenerationOverlayView: View {
     @Binding var isActive: Bool
     var cornerRadius: CGFloat = 20

@@ -11,6 +11,7 @@ struct AIProvidersView: View {
     @State private var stableKey: String = ""
     @State private var savedMessage: String?
     @State private var messageColor: Color = .green
+    @State private var messageDismissTask: Task<Void, Never>?
     @State private var hasFalKey = false
     @State private var hasDalleKey = false
     @State private var hasStableKey = false
@@ -101,15 +102,20 @@ struct AIProvidersView: View {
         .onChange(of: dalleKey) { _ in savedMessage = nil }
         .onChange(of: stableKey) { _ in savedMessage = nil }
         .onChange(of: savedMessage) { message in
+            messageDismissTask?.cancel()
             guard message != nil else { return }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                savedMessage = nil
+            messageDismissTask = Task {
+                try? await Task.sleep(nanoseconds: 3_000_000_000)
+                await MainActor.run {
+                    savedMessage = nil
+                }
             }
         }
         .onDisappear {
             falKey = ""
             dalleKey = ""
             stableKey = ""
+            messageDismissTask?.cancel()
         }
         .navigationTitle("AI Providers")
     }

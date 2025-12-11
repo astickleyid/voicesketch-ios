@@ -53,10 +53,7 @@ actor AIServiceFactory {
     }
     
     func selectBestProvider() async -> AIProvider {
-        if let falKey = await providerKey(for: .falAI), !falKey.isEmpty {
-            return .falAI
-        }
-        if let envKey = ProcessInfo.processInfo.environment["FAL_API_KEY"], !envKey.isEmpty {
+        if !await falApiKey().isEmpty {
             return .falAI
         }
         if let dalleKey = await providerKey(for: .dalle), !dalleKey.isEmpty {
