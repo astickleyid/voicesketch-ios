@@ -11,9 +11,9 @@ actor FalAIService: AIGenerationService {
     private let apiKey: String
     private let endpoint = "https://fal.run/fal-ai/fast-lcm-diffusion"
     
-    init() {
-        // In production, load from secure storage or config
-        self.apiKey = ProcessInfo.processInfo.environment["FAL_API_KEY"] ?? ""
+    init(apiKey: String? = nil) {
+        let envKey = ProcessInfo.processInfo.environment["FAL_API_KEY"] ?? ""
+        self.apiKey = apiKey ?? envKey
     }
     
     func generate(_ request: GenerationRequest) async throws -> Data {

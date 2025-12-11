@@ -19,6 +19,9 @@ struct SettingsView: View {
                 // Subscription Section
                 subscriptionSection
                 
+                // Providers Section
+                providersSection
+                
                 // Stats Section
                 statsSection
                 
@@ -73,6 +76,20 @@ struct SettingsView: View {
             }
         } header: {
             Text("Subscription")
+        }
+    }
+    
+    private var providersSection: some View {
+        Section {
+            NavigationLink {
+                AIProvidersView()
+            } label: {
+                Label("AI Providers", systemImage: "key.fill")
+            }
+        } header: {
+            Text("AI Configuration")
+        } footer: {
+            Text("Store API keys securely for fal.ai and other providers.")
         }
     }
     

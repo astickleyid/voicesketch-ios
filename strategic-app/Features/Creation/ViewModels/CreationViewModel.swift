@@ -88,9 +88,16 @@ final class CreationViewModel: ObservableObject {
         
         do {
             // Create services
-            let aiService = FalAIService()
+            let factory = AIServiceFactory()
+            guard let provider = await factory.selectBestProvider() else {
+                generationTask?.cancel()
+                state = .error("No AI provider configured. Add a key in Settings.")
+                haptics.error()
+                return
+            }
+            let aiService = await factory.createService(provider: provider)
             let imageCache = ImageCacheService()
-            let useCase = GenerateArtworkUseCase(aiService: aiService, imageCache: imageCache)
+            let useCase = GenerateArtworkUseCase(aiService: aiService, imageCache: imageCache, provider: provider)
             
             // Execute generation
             let artwork = try await useCase.execute(transcript: transcript, context: context)

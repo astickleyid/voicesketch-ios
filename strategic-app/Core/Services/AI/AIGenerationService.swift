@@ -24,32 +24,75 @@ enum AIProvider: String, Codable, Sendable {
     case stable = "Stable Diffusion"
     
     var displayName: String { rawValue }
+    
+    var keychainKey: String {
+        switch self {
+        case .falAI: return "fal.ai"
+        case .dalle: return "dalle"
+        case .stable: return "stable"
+        }
+    }
 }
 
 /// Factory for creating AI services
 actor AIServiceFactory {
     private let logger = AppLogger(category: "AIServiceFactory")
     
-    func createService(provider: AIProvider) -> any AIGenerationService {
+    func createService(provider: AIProvider) async -> any AIGenerationService {
         logger.info("Creating AI service: \(provider.rawValue)")
         
         switch provider {
         case .falAI:
-            return FalAIService()
+            let key = await falApiKey()
+            return FalAIService(apiKey: key)
         case .dalle:
-            return FalAIService() // Fallback to FalAI for now
+            return UnsupportedAIService(provider: provider)
         case .stable:
-            return FalAIService() // Fallback to FalAI for now
+            return UnsupportedAIService(provider: provider)
         }
     }
     
-    func selectBestProvider() async -> AIProvider {
-        // Check availability and select best option
-        let falService = FalAIService()
-        if await falService.isAvailable() {
+    func selectBestProvider() async -> AIProvider? {
+        if !await falApiKey().isEmpty {
             return .falAI
         }
-        
-        return .falAI // Default
+        if let dalleKey = await providerKey(for: .dalle), !dalleKey.isEmpty {
+            return .dalle
+        }
+        if let stableKey = await providerKey(for: .stable), !stableKey.isEmpty {
+            return .stable
+        }
+        return nil
     }
+    
+    private func providerKey(for provider: AIProvider) async -> String? {
+        await APIKeysStore.shared.getKey(for: provider.keychainKey)
+    }
+    
+    private func falApiKey() async -> String {
+        if let stored = await providerKey(for: .falAI), !stored.isEmpty {
+            return stored
+        }
+        return ProcessInfo.processInfo.environment["FAL_API_KEY"] ?? ""
+    }
+}
+
+actor UnsupportedAIService: AIGenerationService {
+    let provider: AIProvider
+    
+    init(provider: AIProvider) {
+        self.provider = provider
+    }
+    
+    func generate(_ request: GenerationRequest) async throws -> Data {
+        throw VoiceSketchError.apiError(underlying: NSError(
+            domain: provider.rawValue,
+            code: -1,
+            userInfo: [NSLocalizedDescriptionKey: "\(provider.displayName) requires an API key. Configure it in Settings > AI Configuration > AI Providers."]
+        ))
+    }
+    
+    func isAvailable() async -> Bool { false }
+    
+    func estimatedCost(for quality: ImageQuality) -> Decimal { 0 }
 }
