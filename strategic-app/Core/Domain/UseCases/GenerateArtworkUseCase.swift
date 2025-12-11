@@ -11,11 +11,13 @@ actor GenerateArtworkUseCase {
     private let logger = AppLogger(category: "GenerateArtwork")
     private let aiService: any AIGenerationService
     private let imageCache: ImageCacheService
+    private let provider: AIProvider
     private let parser = VoiceCommandParser()
     
-    init(aiService: any AIGenerationService, imageCache: ImageCacheService) {
+    init(aiService: any AIGenerationService, imageCache: ImageCacheService, provider: AIProvider) {
         self.aiService = aiService
         self.imageCache = imageCache
+        self.provider = provider
     }
     
     /// Execute generation from voice command
@@ -39,7 +41,7 @@ actor GenerateArtworkUseCase {
         let request = GenerationRequest(
             prompt: description,
             style: selectedStyle,
-            provider: .falAI,
+            provider: provider,
             quality: .high
         )
         
@@ -70,7 +72,7 @@ actor GenerateArtworkUseCase {
             isFavorite: false,
             tags: extractTags(from: description),
             generationMetadata: GenerationMetadata(
-                provider: .falAI,
+                provider: provider,
                 model: "fast-lcm-diffusion",
                 seed: request.seed,
                 generationTimeMs: generationTime,
@@ -93,7 +95,7 @@ actor GenerateArtworkUseCase {
         let request = GenerationRequest(
             prompt: prompt,
             style: style,
-            provider: .falAI,
+            provider: provider,
             quality: .high
         )
         
@@ -117,7 +119,7 @@ actor GenerateArtworkUseCase {
             isFavorite: false,
             tags: extractTags(from: prompt),
             generationMetadata: GenerationMetadata(
-                provider: .falAI,
+                provider: provider,
                 model: "fast-lcm-diffusion",
                 seed: request.seed,
                 generationTimeMs: generationTime,

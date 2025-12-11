@@ -30,26 +30,27 @@ enum AIProvider: String, Codable, Sendable {
 actor AIServiceFactory {
     private let logger = AppLogger(category: "AIServiceFactory")
     
-    func createService(provider: AIProvider) -> any AIGenerationService {
+    func createService(provider: AIProvider) async -> any AIGenerationService {
         logger.info("Creating AI service: \(provider.rawValue)")
         
         switch provider {
         case .falAI:
-            return FalAIService()
+            let key = await APIKeysStore.shared.getKey(for: provider.rawValue) ?? ""
+            return FalAIService(apiKey: key)
         case .dalle:
-            return FalAIService() // Fallback to FalAI for now
+            let key = await APIKeysStore.shared.getKey(for: "dalle") ?? ""
+            return FalAIService(apiKey: key) // Fallback to FalAI for now
         case .stable:
-            return FalAIService() // Fallback to FalAI for now
+            let key = await APIKeysStore.shared.getKey(for: "stable") ?? ""
+            return FalAIService(apiKey: key) // Fallback to FalAI for now
         }
     }
     
     func selectBestProvider() async -> AIProvider {
-        // Check availability and select best option
-        let falService = FalAIService()
-        if await falService.isAvailable() {
+        let falKey = await APIKeysStore.shared.getKey(for: AIProvider.falAI.rawValue) ?? ""
+        if !falKey.isEmpty {
             return .falAI
         }
-        
-        return .falAI // Default
+        return .falAI
     }
 }

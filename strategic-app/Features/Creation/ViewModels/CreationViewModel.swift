@@ -88,9 +88,11 @@ final class CreationViewModel: ObservableObject {
         
         do {
             // Create services
-            let aiService = FalAIService()
+            let factory = AIServiceFactory()
+            let provider = await factory.selectBestProvider()
+            let aiService = await factory.createService(provider: provider)
             let imageCache = ImageCacheService()
-            let useCase = GenerateArtworkUseCase(aiService: aiService, imageCache: imageCache)
+            let useCase = GenerateArtworkUseCase(aiService: aiService, imageCache: imageCache, provider: provider)
             
             // Execute generation
             let artwork = try await useCase.execute(transcript: transcript, context: context)

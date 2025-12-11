@@ -95,10 +95,15 @@ struct CreationView: View {
     
     private func generatingView(progress: Double) -> some View {
         VStack(spacing: Theme.Spacing.lg) {
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
-                .stroke(Theme.Colors.primary, lineWidth: 2)
-                .frame(width: 300, height: 300)
-                .overlay(ProgressView(value: progress).padding())
+            ZStack {
+                GenerationOverlayView(isActive: .constant(true), cornerRadius: Theme.CornerRadius.lg)
+                    .frame(width: 300, height: 300)
+                    .allowsHitTesting(false)
+                
+                ProgressView(value: progress)
+                    .padding()
+            }
+            .frame(width: 300, height: 300)
             
             Text("Creating your artwork...")
                 .font(Theme.Typography.body)
